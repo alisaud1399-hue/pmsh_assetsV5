@@ -36,6 +36,12 @@ json_response(['ok' => false, 'error' => 'الجلسة غير نشطة للمس�
 if (!inv_session_guard($session_id)) {
     log_activity('inventory.submit.denied', 'session:' . $session_id, 'user_not_member');
     json_response(['ok' => false, 'error' => 'أنت لست عضواً في لجنة الجرد لهذه الجلسة — لا يمكن حفظ البيانات.'], 403);
+}   // ← هنا ينتهي حارس العضوية
+
+// 2.5 ★ رادار المراقبة: منع العضو المعلَّق من الحفظ (بلوك مستقل بعده مباشرة)
+require_once BASE_PATH . '/includes/session_controls.php';
+if (smc_is_suspended($pdo, $session_id, (int)(current_user()['id'] ?? 0))) {
+    json_response(['ok' => false, 'error' => 'مشاركتك في هذه الجلسة معلّقة من مدير الأصول — لا يمكن الحفظ.'], 403);
 }
 
 // استقبال المتغيرات الأخرى وتنظيفها

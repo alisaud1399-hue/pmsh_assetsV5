@@ -47,7 +47,7 @@ try {
                EXISTS(SELECT 1 FROM custody_ai_suggestions s WHERE s.asset_id = a.id AND s.status IN ('pending','accepted') AND s.suggested_dept_id = ?) AS ai_match,
                ia.action AS last_action, ia.audited_at, 
                
-               u.username AS auditor_name -- ⚠️ تعديل هنا: غير كلمة username إلى اسم العمود الفعلي لديك مثل full_name إذا لزم الأمر
+               u.full_name AS auditor_name -- ⚠️ تعديل هنا: غير كلمة username إلى اسم العمود الفعلي لديك مثل full_name إذا لزم الأمر
 
         FROM assets a
         LEFT JOIN (

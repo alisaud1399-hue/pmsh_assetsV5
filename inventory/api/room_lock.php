@@ -19,6 +19,11 @@ $sess_status = $ss->fetchColumn();
 if (!$sess_status) json_response(['ok'=>false,'error'=>'no_session']);
 if ($sess_status !== 'active') json_response(['ok'=>false,'error'=>'session_not_active','status'=>$sess_status]);
 if (!inv_session_guard($session_id)) json_response(['ok'=>false,'error'=>'not_member'], 403);
+/* ── رادار المراقبة: فرض التعليق والمنع من غرفة ── */
+require_once BASE_PATH.'/includes/session_controls.php';
+if (smc_is_suspended($pdo,$session_id,$me)) json_response(['ok'=>false,'error'=>'member_suspended','msg'=>'مشاركتك في هذه الجلسة معلّقة من مدير الأصول.'], 403);
+if (in_array($action,['checkin','takeover'],true) && $room_id>0 && smc_is_room_blocked($pdo,$session_id,$me,$room_id))
+    json_response(['ok'=>false,'error'=>'room_blocked','msg'=>'غير مسموح لك بدخول هذه الغرفة — راجع مدير الأصول.'], 403);
 
 $mode = get_setting('inv_parallel_mode','off');
 $par_rooms = json_decode(get_setting('inv_parallel_rooms','[]'), true) ?: [];
@@ -74,8 +79,14 @@ case 'status': {
     $mine=null; $other=null;
     foreach ($locks as $L){ if ((int)$L['locked_by']===$me) $mine=$L; else $other=$other?:$L; }
     $done = rl_completed($pdo,$session_id,$room_id);
+    $rq=$pdo->prepare("SELECT r.name, r.name_en, f.name f_name, f.name_en f_name_en, b.name b_name, b.name_en b_name_en
+        FROM item_locations r LEFT JOIN item_locations f ON f.id=r.parent_id LEFT JOIN item_locations b ON b.id=f.parent_id WHERE r.id=?");
+    $rq->execute([$room_id]); $room=$rq->fetch(PDO::FETCH_ASSOC);
+    $users=array_map(fn($L)=>['name'=>$L['full_name']??'','me'=>(int)$L['locked_by']===$me,'at'=>$L['locked_at'],'resumed_at'=>$L['resumed_at']??null],$locks);
     json_response(['ok'=>true,'completed'=>(bool)$done,'completed_by'=>$done?($done['full_name']??''):null,
-        'mine'=>(bool)$mine,'other'=>$other?['name'=>$other['full_name'],'at'=>$other['locked_at']]:null,'parallel'=>$parallel]);
+        'mine'=>(bool)$mine,'other'=>$other?['name'=>$other['full_name'],'at'=>$other['locked_at']]:null,'parallel'=>$parallel,
+        'room'=>$room?:null,'users'=>$users,
+        'my_lock'=>$mine?['locked_at'=>$mine['locked_at'],'resumed_at'=>$mine['resumed_at'],'expires_at'=>$mine['expires_at']]:null]);
 }
 
 case 'checkin': {
