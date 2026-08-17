@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج A - Tri-Side Focus</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-page: #f8fafc;
+            --bg-focus: #ffffff;
+            --primary: #0284c7;
+            --primary-light: #e0f2fe;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.08);
+            --shadow-xl: 0 25px 50px -12px rgba(0,0,0,0.15);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Tajawal', sans-serif; background: var(--bg-page); color: var(--text); min-height: 100vh; padding: 30px; }
+        
+        .mockup-header { text-align: center; margin-bottom: 30px; }
+        .mockup-header h1 { font-size: 26px; font-weight: 900; color: var(--primary); margin-bottom: 6px; }
+        .mockup-header p { color: var(--text-muted); font-size: 13px; }
+        
+        /* Triple Grid - Right Sidebar | Center Focus | Left Sidebar */
+        .tri-grid { 
+            display: grid; 
+            grid-template-columns: 300px 1fr 280px; 
+            gap: 20px; 
+            max-width: 1600px; 
+            margin: 0 auto; 
+        }
+        @media(max-width: 1300px) { .tri-grid { grid-template-columns: 1fr; } }
+        
+        /* ===== RIGHT SIDEBAR - Fixed Data ===== */
+        .sidebar-right { position: sticky; top: 20px; height: fit-content; }
+        .data-card { 
+            background: #fff; 
+            border-radius: 14px; 
+            border: 1px solid var(--border); 
+            overflow: hidden; 
+            margin-bottom: 14px; 
+            box-shadow: var(--shadow-sm); 
+        }
+        .data-card-header { 
+            padding: 12px 16px; 
+            font-size: 11px; 
+            font-weight: 900; 
+            color: #fff; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+            border-bottom: 2px solid rgba(0,0,0,0.05);
+        }
+        .data-card-body { padding: 14px 16px; }
+        
+        .data-row { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            padding: 8px 0; 
+            border-bottom: 1px dashed var(--border); 
+            font-size: 11px;
+        }
+        .data-row:last-child { border-bottom: none; }
+        .data-row i { width: 22px; height: 22px; border-radius: 5px; background: var(--primary-light); display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 9px; flex-shrink: 0; }
+        .data-row .lbl { color: var(--text-muted); font-weight: 600; min-width: 70px; font-size: 10px; }
+        .data-row .val { font-weight: 800; flex: 1; font-size: 11.5px; }
+        
+        .status-pill { 
+            padding: 8px 14px; 
+            border-radius: 30px; 
+            font-size: 11px; 
+            font-weight: 900; 
+            background: var(--primary); 
+            color: #fff; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 6px; 
+            margin-bottom: 12px; 
+            box-shadow: var(--shadow);
+        }
+        
+        .id-display {
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            text-align: center;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), #0ea5e9);
+            color: #fff;
+            border-radius: 14px;
+            margin-bottom: 14px;
+        }
+        
+        /* ===== CENTER FOCUS AREA ===== */
+        .focus-area { 
+            background: var(--bg-focus); 
+            border-radius: 20px; 
+            box-shadow: var(--shadow-xl); 
+            border: 1px solid var(--border); 
+            padding: 24px; 
+            position: relative;
+        }
+        .focus-area::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--success), var(--warning));
+            border-radius: 20px 20px 0 0;
+        }
+        
+        .focus-title { 
+            font-size: 16px; 
+            font-weight: 900; 
+            color: var(--text); 
+            margin-bottom: 18px; 
+            padding-bottom: 14px; 
+            border-bottom: 2px solid var(--primary-light); 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        
+        /* Problem Statement - Hero Section */
+        .problem-hero { 
+            background: linear-gradient(135deg, #f0f9ff 0%, var(--primary-light) 100%); 
+            border-radius: 16px; 
+            padding: 22px; 
+            font-size: 14px; 
+            font-weight: 600; 
+            line-height: 1.9; 
+            color: var(--text); 
+            border-right: 5px solid var(--primary); 
+            margin-bottom: 20px; 
+            position: relative;
+        }
+        .problem-hero::before { 
+            content: '📋'; 
+            position: absolute; 
+            top: 14px; 
+            left: 16px; 
+            font-size: 24px; 
+            opacity: 0.3; 
+        }
+        
+        /* ===== LEFT SIDEBAR - Derived Data ===== */
+        .sidebar-left { position: sticky; top: 20px; height: fit-content; }
+        
+        /* Action Panel */
+        .action-panel { 
+            background: linear-gradient(135deg, #fff, var(--primary-light)); 
+            border: 2px solid var(--primary); 
+            border-radius: 16px; 
+            padding: 18px; 
+            margin-bottom: 14px; 
+            box-shadow: var(--shadow); 
+        }
+        .action-title { 
+            font-size: 12px; 
+            font-weight: 900; 
+            color: var(--primary); 
+            margin-bottom: 12px; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .action-btn { 
+            padding: 12px 10px; 
+            border-radius: 10px; 
+            border: none; 
+            font-size: 11px; 
+            font-weight: 800; 
+            color: #fff; 
+            cursor: pointer; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 4px; 
+            transition: all 0.2s; 
+            font-family: 'Tajawal'; 
+        }
+        .action-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+        .action-btn i { font-size: 14px; }
+        .action-btn.full { grid-column: span 2; flex-direction: row; justify-content: center; }
+        
+        .btn-blue { background: var(--primary); }
+        .btn-green { background: var(--success); }
+        .btn-yellow { background: var(--warning); }
+        .btn-red { background: var(--danger); }
+        .btn-gray { background: #64748b; }
+        .btn-dark { background: #334155; }
+        
+        /* Timeline Mini */
+        .timeline-mini { position: relative; padding-right: 20px; }
+        .timeline-mini::before { content: ''; position: absolute; right: 6px; top: 8px; bottom: 8px; width: 2px; background: var(--border); }
+        .timeline-mini-item { display: flex; gap: 10px; margin-bottom: 12px; position: relative; }
+        .timeline-mini-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--bg-focus); border: 3px solid var(--text-muted); flex-shrink: 0; z-index: 1; margin-top: 2px; }
+        .timeline-mini-dot.active { border-color: var(--success); background: var(--success); }
+        .timeline-mini-content h6 { font-size: 10.5px; font-weight: 800; margin-bottom: 1px; }
+        .timeline-mini-content p { font-size: 9px; color: var(--text-muted); }
+        
+        /* Stats Block */
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .stat-box { background: #fff; border-radius: 8px; padding: 10px; text-align: center; border: 1px solid var(--border); }
+        .stat-num { font-size: 18px; font-weight: 900; font-family: 'Inter'; color: var(--primary); }
+        .stat-lbl { font-size: 8px; color: var(--text-muted); font-weight: 700; margin-top: 2px; }
+        
+        /* Notes */
+        .note-box { 
+            padding: 12px 14px; 
+            border-radius: 10px; 
+            font-size: 11.5px; 
+            font-weight: 600; 
+            margin-bottom: 10px; 
+            display: flex; 
+            gap: 8px; 
+            align-items: flex-start; 
+        }
+        .note-box i { margin-top: 2px; flex-shrink: 0; }
+        .note-warn { background: #fffbeb; border-right: 3px solid var(--warning); color: #78350f; }
+        .note-suc { background: #ecfdf5; border-right: 3px solid var(--success); color: #064e3b; }
+        
+        /* Full Timeline */
+        .full-timeline { display: flex; gap: 12px; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px dashed var(--border); }
+        .full-timeline:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .full-timeline-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--primary-light); display: flex; align-items: center; justify-content: center; color: var(--primary); flex-shrink: 0; }
+        .full-timeline-content { flex: 1; }
+        .full-timeline-content h6 { font-size: 12px; font-weight: 800; margin-bottom: 2px; }
+        .full-timeline-content p { font-size: 10px; color: var(--text-muted); }
+        
+        /* Files */
+        .file-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #fefce8; border: 1px solid #fde047; border-radius: 8px; margin-bottom: 6px; }
+        .file-row i { color: var(--warning); font-size: 14px; }
+        .file-row span { font-size: 11px; font-weight: 700; color: #78350f; flex: 1; }
+        .file-row .size { font-size: 9px; color: #a16207; }
+        
+        /* Footer */
+        .mockup-footer { text-align: center; margin-top: 30px; padding: 16px; color: var(--text-muted); font-size: 11px; }
+        .color-swatches { display: flex; justify-content: center; gap: 10px; margin-top: 8px; }
+        .swatch { width: 30px; height: 30px; border-radius: 6px; box-shadow: var(--shadow-sm); border: 2px solid #fff; }
+    </style>
+</head>
+<body>
+    <div class="mockup-header">
+        <h1><i class="fa-solid fa-layer-group"></i> نموذج A: Tri-Side Focus</h1>
+        <p>بيانات ثابتة يمين + تركيز في الوسط + مشتقات يسار — المهندس يركز على القرار</p>
+    </div>
+    
+    <div class="tri-grid">
+        <!-- RIGHT SIDEBAR: Fixed Data -->
+        <div class="sidebar-right">
+            <div class="id-display">
+                <i class="fa-solid fa-hashtag"></i> CMP-2024-0847
+            </div>
+            
+            <!-- Status -->
+            <div class="status-pill">
+                <i class="fa-solid fa-gears"></i> جاري العمل
+            </div>
+            
+            <!-- Basic Info -->
+            <div class="data-card">
+                <div class="data-card-header" style="background: linear-gradient(135deg, #0284c7, #0ea5e9);">
+                    <i class="fa-solid fa-info-circle"></i> بيانات أساسية
+                </div>
+                <div class="data-card-body">
+                    <div class="data-row"><i class="fa-solid fa-hospital"></i><span class="lbl">القسم</span><span class="val">الطوارئ</span></div>
+                    <div class="data-row"><i class="fa-solid fa-user-nurse"></i><span class="lbl">المُبلِّغ</span><span class="val">أحمد محمد</span></div>
+                    <div class="data-row"><i class="fa-solid fa-phone"></i><span class="lbl">الهاتف</span><span class="val eng">0501234567</span></div>
+                    <div class="data-row"><i class="fa-solid fa-calendar"></i><span class="lbl">التاريخ</span><span class="val eng">15/01/2024</span></div>
+                    <div class="data-row"><i class="fa-solid fa-clock"></i><span class="lbl">الوقت</span><span class="val eng">08:30 ص</span></div>
+                </div>
+            </div>
+            
+            <!-- Device Info -->
+            <div class="data-card">
+                <div class="data-card-header" style="background: linear-gradient(135deg, #059669, #10b981);">
+                    <i class="fa-solid fa-laptop-medical"></i> الجهاز
+                </div>
+                <div class="data-card-body">
+                    <div class="data-row"><i class="fa-solid fa-microchip"></i><span class="lbl">النوع</span><span class="val">مونيتور حياة</span></div>
+                    <div class="data-row"><i class="fa-solid fa-tag"></i><span class="lbl">التاج</span><span class="val eng">SN-84729</span></div>
+                    <div class="data-row"><i class="fa-solid fa-industry"></i><span class="lbl">الشركة</span><span class="val">Philips</span></div>
+                    <div class="data-row"><i class="fa-solid fa-barcode"></i><span class="lbl">الموديل</span><span class="val eng">IntelliVue</span></div>
+                    <div class="data-row"><i class="fa-solid fa-hourglass-half"></i><span class="lbl">العمر</span><span class="val eng">3 سنوات</span></div>
+                    <div class="data-row"><i class="fa-solid fa-shield-halved"></i><span class="lbl">الضمان</span><span class="val" style="color: var(--success)">✓ ساري</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CENTER FOCUS AREA -->
+        <div class="focus-area">
+            <div class="focus-title">
+                <i class="fa-solid fa-clipboard-list" style="color: var(--primary);"></i>
+                التشخيص الفني والقرار
+            </div>
+            
+            <!-- Problem Statement -->
+            <div class="problem-hero">
+                <strong style="display: block; margin-bottom: 8px; color: var(--primary); font-size: 13px;">
+                    <i class="fa-solid fa-quote-right"></i> وصف المشكلة من المُبلِّغ:
+                </strong>
+                الجهاز لا يعمل عند التشغيل. عند الضغط على زر التشغيل، يضيء المؤشر الأحمر وينطفئ فوراً. الشاشة تعرض رسالة "E-004: Power Supply Failure" بشكل متكرر. الجهاز في قسم الطوارئ ويحتاج للعمل فوراً.
+            </div>
+            
+            <!-- Notes -->
+            <div class="note-box note-warn">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <div><strong>سبب التعثر:</strong> تأخر في وصول قطعة الغيار (Power Board) من المورد. تم طلبها 10/01 ومن المتوقع وصولها اليوم.</div>
+            </div>
+            <div class="note-box note-suc">
+                <i class="fa-solid fa-circle-check"></i>
+                <div><strong>تقرير الإصلاح:</strong> تم استبدال وحدة إمداد الطاقة. الجهاز يعمل الآن بشكل طبيعي بعد الفحص.</div>
+            </div>
+            
+            <!-- Timeline -->
+            <div style="margin-top: 20px;">
+                <div style="font-size: 13px; font-weight: 900; color: var(--text); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid var(--primary-light);">
+                    <i class="fa-solid fa-list-check" style="color: var(--primary);"></i> سجل الحركة الكامل
+                </div>
+                <div class="full-timeline">
+                    <div class="full-timeline-icon"><i class="fa-solid fa-play"></i></div>
+                    <div class="full-timeline-content"><h6>بدء العمل الميداني على الجهاز</h6><p>محمود الفني · 15 يناير - 10:30 ص</p></div>
+                </div>
+                <div class="full-timeline">
+                    <div class="full-timeline-icon" style="background: #fef3c7; color: var(--warning);"><i class="fa-solid fa-handshake"></i></div>
+                    <div class="full-timeline-content"><h6>استلام البلاغ وبدء المعاينة</h6><p>محمود الفني · 15 يناير - 08:00 ص</p></div>
+                </div>
+                <div class="full-timeline">
+                    <div class="full-timeline-icon" style="background: #d1fae5; color: var(--success);"><i class="fa-solid fa-plus"></i></div>
+                    <div class="full-timeline-content"><h6>تم إنشاء البلاغ</h6><p>أحمد محمد · 14 يناير - 04:45 م</p></div>
+                </div>
+            </div>
+            
+            <!-- Attachments -->
+            <div style="margin-top: 20px;">
+                <div style="font-size: 13px; font-weight: 900; color: var(--text); margin-bottom: 12px;">
+                    <i class="fa-solid fa-paperclip" style="color: var(--warning);"></i> المرفقات (3)
+                </div>
+                <div class="file-row"><i class="fa-solid fa-file-pdf"></i><span>صورة_الخطأ.pdf</span><span class="size">2.4MB</span></div>
+                <div class="file-row"><i class="fa-solid fa-image"></i><span>صورة_الجهاز.jpg</span><span class="size">1.8MB</span></div>
+                <div class="file-row"><i class="fa-solid fa-file-excel"></i><span>تقرير_الصيانة.xlsx</span><span class="size">856KB</span></div>
+            </div>
+        </div>
+        
+        <!-- LEFT SIDEBAR: Actions & Derived Data -->
+        <div class="sidebar-left">
+            <!-- Actions Panel -->
+            <div class="action-panel">
+                <div class="action-title">
+                    <i class="fa-solid fa-bolt"></i> إجراءات سريعة
+                </div>
+                <div class="action-grid">
+                    <button class="action-btn btn-blue"><i class="fa-solid fa-handshake"></i><span>استلام</span></button>
+                    <button class="action-btn btn-blue"><i class="fa-solid fa-play"></i><span>بدء</span></button>
+                    <button class="action-btn btn-yellow"><i class="fa-solid fa-pause"></i><span>تعثر</span></button>
+                    <button class="action-btn btn-red"><i class="fa-solid fa-arrow-up"></i><span>تصعيد</span></button>
+                    <button class="action-btn btn-green full"><i class="fa-solid fa-circle-check"></i><span>حل البلاغ</span></button>
+                    <button class="action-btn btn-gray"><i class="fa-solid fa-ban"></i><span>رفض</span></button>
+                    <button class="action-btn btn-dark full"><i class="fa-solid fa-lock"></i><span>إغلاق إداري</span></button>
+                </div>
+            </div>
+            
+            <!-- FDA Stats -->
+            <div class="data-card">
+                <div class="data-card-header" style="background: linear-gradient(135deg, #0891b2, #06b6d4);">
+                    <i class="fa-solid fa-globe"></i> تقارير FDA
+                </div>
+                <div class="data-card-body">
+                    <div class="stat-grid">
+                        <div class="stat-box"><div class="stat-num">12</div><div class="stat-lbl">بلاغ</div></div>
+                        <div class="stat-box"><div class="stat-num" style="color:var(--danger)">3</div><div class="stat-lbl">عطل</div></div>
+                        <div class="stat-box"><div class="stat-num" style="color:var(--warning)">1</div><div class="stat-lbl">خطورة</div></div>
+                        <div class="stat-box"><div class="stat-num" style="color:var(--success)">8</div><div class="stat-lbl">آمن</div></div>
+                    </div>
+                    <button style="width:100%;margin-top:10px;background:#0891b2;color:#fff;border:none;padding:8px;border-radius:8px;font-size:10px;font-weight:800;cursor:pointer;font-family:'Tajawal'">
+                        عرض التفاصيل <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Recent Activity (Derived) -->
+            <div class="data-card">
+                <div class="data-card-header" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);">
+                    <i class="fa-solid fa-clock-rotate-left"></i> آخر التحركات
+                </div>
+                <div class="data-card-body">
+                    <div class="timeline-mini">
+                        <div class="timeline-mini-item">
+                            <div class="timeline-mini-dot active"></div>
+                            <div class="timeline-mini-content"><h6>بدء العمل الميداني</h6><p>محمود · 10:30 ص</p></div>
+                        </div>
+                        <div class="timeline-mini-item">
+                            <div class="timeline-mini-dot"></div>
+                            <div class="timeline-mini-content"><h6>استلام البلاغ</h6><p>محمود · 08:00 ص</p></div>
+                        </div>
+                        <div class="timeline-mini-item">
+                            <div class="timeline-mini-dot"></div>
+                            <div class="timeline-mini-content"><h6>تسجيل البلاغ</h6><p>أحمد · أمس 04:45 م</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Previous Complaints -->
+            <div class="data-card">
+                <div class="data-card-header" style="background: linear-gradient(135deg, #475569, #64748b);">
+                    <i class="fa-solid fa-history"></i> بلاغات سابقة
+                </div>
+                <div class="data-card-body">
+                    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px dashed var(--border);">
+                        <span style="width:8px;height:8px;border-radius:50%;background:var(--success);flex-shrink:0"></span>
+                        <span style="font-size:10px;font-weight:700;flex:1">عطل شاشة</span>
+                        <span class="eng" style="font-size:9px;color:var(--text-muted)">ديسمبر</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px dashed var(--border);">
+                        <span style="width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0"></span>
+                        <span style="font-size:10px;font-weight:700;flex:1">صيانة دورية</span>
+                        <span class="eng" style="font-size:9px;color:var(--text-muted)">نوفمبر</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;">
+                        <span style="width:8px;height:8px;border-radius:50%;background:var(--warning);flex-shrink:0"></span>
+                        <span style="font-size:10px;font-weight:700;flex:1">بطارية</span>
+                        <span class="eng" style="font-size:9px;color:var(--text-muted)">سبتمبر</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mockup-footer">
+        <p><strong>الفلسفة:</strong> بيانات ثابتة (يمين) + قرار/محتوى (وسط مع تركيز) + مشتقات وإجراءات (يسار)</p>
+        <div class="color-swatches">
+            <div class="swatch" style="background: #0284c7;"></div>
+            <div class="swatch" style="background: #0ea5e9;"></div>
+            <div class="swatch" style="background: #e0f2fe;"></div>
+            <div class="swatch" style="background: #059669;"></div>
+            <div class="swatch" style="background: #f8fafc;"></div>
+            <div class="swatch" style="background: #ffffff;"></div>
+        </div>
+    </div>
+</body>
+</html>

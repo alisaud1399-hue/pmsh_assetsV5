@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تصور 1 - Clinical Clean</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --primary: #0ea5e9;
+            --primary-light: #e0f2fe;
+            --primary-dark: #0284c7;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Tajawal', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 40px; }
+        
+        .mockup-header { text-align: center; margin-bottom: 40px; }
+        .mockup-header h1 { font-size: 28px; font-weight: 800; color: var(--primary-dark); margin-bottom: 8px; }
+        .mockup-header p { color: var(--text-muted); font-size: 14px; }
+        
+        .L-grid { display: grid; grid-template-columns: 340px 1fr; gap: 24px; max-width: 1400px; margin: 0 auto; }
+        @media(max-width: 1100px) { .L-grid { grid-template-columns: 1fr; } }
+        
+        /* Card Styles */
+        .card { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); overflow: hidden; }
+        .card-header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; padding: 20px 24px; }
+        .card-header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .complaint-num { font-size: 18px; font-weight: 800; }
+        .status-badge { background: rgba(255,255,255,0.25); padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+        .meta-tags { display: flex; gap: 12px; flex-wrap: wrap; }
+        .meta-tag { background: rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        
+        /* Sidebar */
+        .sidebar { position: sticky; top: 24px; }
+        .sidebar-cards { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+        .mini-card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+        .mini-card-header { padding: 12px 16px; font-size: 12px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .mini-card-body { padding: 16px; }
+        
+        .info-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+        .info-row:last-child { border-bottom: none; }
+        .info-row i { width: 16px; color: var(--primary); text-align: center; }
+        .info-label { color: var(--text-muted); font-weight: 600; min-width: 80px; }
+        .info-value { font-weight: 700; flex: 1; }
+        
+        .warranty-badge { display: inline-flex; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; }
+        
+        /* KPI Grid */
+        .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .kpi-item { background: var(--primary-light); border-radius: 10px; padding: 14px; text-align: center; }
+        .kpi-value { font-size: 22px; font-weight: 800; font-family: 'Inter', sans-serif; color: var(--primary); }
+        .kpi-label { font-size: 9px; font-weight: 700; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; }
+        
+        /* Timeline Mini */
+        .timeline-item { display: flex; gap: 12px; padding: 12px 0; position: relative; }
+        .timeline-item::after { content: ''; position: absolute; right: 10px; top: 32px; bottom: -12px; width: 2px; background: var(--border); }
+        .timeline-item:last-child::after { display: none; }
+        .timeline-dot { width: 22px; height: 22px; border-radius: 50%; background: var(--primary-light); border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 9px; flex-shrink: 0; z-index: 1; }
+        .timeline-content h5 { font-size: 11px; font-weight: 700; margin-bottom: 2px; }
+        .timeline-content p { font-size: 9px; color: var(--text-muted); }
+        
+        /* Main Content */
+        .main-content { display: flex; flex-direction: column; gap: 20px; }
+        
+        .section-card { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); padding: 24px; }
+        .section-header { font-size: 14px; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; padding-bottom: 12px; border-bottom: 2px solid var(--primary-light); }
+        .section-header i { color: var(--primary); }
+        
+        .problem-box { background: var(--primary-light); border-radius: 12px; padding: 20px; font-size: 14px; font-weight: 600; line-height: 1.8; color: var(--text); border-right: 4px solid var(--primary); }
+        
+        .note-box { margin-top: 12px; padding: 14px 16px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+        .note-warning { background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; }
+        .note-danger { background: #fee2e2; border: 1px solid #fecaca; color: #991b1b; }
+        .note-success { background: #d1fae5; border: 1px solid #a7f3d0; color: #065f46; }
+        
+        /* Action Buttons */
+        .action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+        .action-btn { padding: 14px 16px; border-radius: 12px; border: none; font-size: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; font-family: 'Tajawal', sans-serif; }
+        .action-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-warning { background: var(--warning); color: #fff; }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-secondary { background: var(--border); color: var(--text); }
+        
+        /* Attachments */
+        .attachment-item { display: flex; align-items: center; gap: 12px; background: #fef9c3; border: 1px solid #fde047; border-radius: 10px; padding: 12px 16px; margin-bottom: 8px; }
+        .attachment-item i { color: var(--warning); font-size: 18px; }
+        .attachment-item span { font-size: 12px; font-weight: 700; color: #854d0e; }
+        
+        .upload-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .upload-zone:hover { border-color: var(--primary); background: var(--primary-light); }
+        .upload-zone i { font-size: 28px; color: var(--text-muted); margin-bottom: 8px; }
+        .upload-zone p { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+        
+        /* Full Timeline */
+        .full-timeline { display: flex; gap: 16px; margin-bottom: 20px; }
+        .full-timeline-dot { width: 36px; height: 36px; border-radius: 50%; background: var(--primary-light); border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .full-timeline-content { flex: 1; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .full-timeline-content h5 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+        .full-timeline-content p { font-size: 11px; color: var(--text-muted); }
+        
+        /* FDA Section */
+        .fda-card { background: linear-gradient(135deg, #0891b2, #06b6d4); color: #fff; }
+        .fda-card .mini-card-header { background: transparent; }
+        .fda-kpi { background: rgba(255,255,255,0.2); border-radius: 10px; padding: 12px; text-align: center; }
+        .fda-kpi .v { font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; }
+        .fda-kpi .l { font-size: 8px; font-weight: 600; opacity: 0.9; margin-top: 2px; }
+        .fda-btn { width: 100%; background: rgba(255,255,255,0.2); border: none; color: #fff; padding: 10px; border-radius: 10px; font-size: 11px; font-weight: 800; cursor: pointer; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        
+        /* Footer */
+        .mockup-footer { text-align: center; margin-top: 40px; padding: 20px; color: var(--text-muted); font-size: 12px; }
+        .color-swatches { display: flex; justify-content: center; gap: 12px; margin-top: 12px; }
+        .swatch { width: 40px; height: 40px; border-radius: 8px; box-shadow: var(--shadow); }
+    </style>
+</head>
+<body>
+    <div class="mockup-header">
+        <h1><i class="fa-solid fa-stethoscope"></i> تصور 1: Clinical Clean</h1>
+        <p>تصميم نظيف أبيض مع لمسات زرقاء طبية — مثالي للمستشفيات</p>
+    </div>
+    
+    <div class="L-grid">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-header-top">
+                        <span class="complaint-num">#CMP-2024-0847</span>
+                        <span class="status-badge"><i class="fa-solid fa-circle"></i> جاري العمل</span>
+                    </div>
+                    <div class="meta-tags">
+                        <span class="meta-tag"><i class="fa-solid fa-hospital"></i> قسم الطوارئ</span>
+                        <span class="meta-tag"><i class="fa-solid fa-user"></i> أحمد محمد</span>
+                        <span class="meta-tag eng"><i class="fa-solid fa-calendar"></i> 2024-01-15</span>
+                    </div>
+                </div>
+                
+                <div class="sidebar-cards">
+                    <!-- Asset Info -->
+                    <div class="mini-card">
+                        <div class="mini-card-header" style="background: linear-gradient(135deg, #0ea5e9, #0284c7);">
+                            <i class="fa-solid fa-monitor-heart"></i> ملف الجهاز
+                        </div>
+                        <div class="mini-card-body">
+                            <div class="info-row"><i class="fa-solid fa-microchip"></i><span class="info-label">الجهاز</span><span class="info-value">مونيتور حياة</span></div>
+                            <div class="info-row"><i class="fa-solid fa-hashtag"></i><span class="info-label">التاج</span><span class="info-value eng">SN-84729-X</span></div>
+                            <div class="info-row"><i class="fa-solid fa-industry"></i><span class="info-label">الشركة</span><span class="info-value">Philips / IntelliVue</span></div>
+                            <div class="info-row"><i class="fa-solid fa-clock"></i><span class="info-label">العمر</span><span class="info-value eng">3 سنوات</span></div>
+                            <div class="info-row"><i class="fa-solid fa-shield-halved"></i><span class="info-label">الضمان</span>
+                                <span class="warranty-badge" style="background:#d1fae5;color:#065f46;border:1px solid #a7f3d0">
+                                    <i class="fa-solid fa-check"></i> ساري
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- FDA -->
+                    <div class="mini-card fda-card">
+                        <div class="mini-card-header">
+                            <i class="fa-solid fa-globe"></i> تقارير FDA
+                        </div>
+                        <div class="mini-card-body">
+                            <div class="kpi-grid">
+                                <div class="fda-kpi"><div class="v">12</div><div class="l">بلاغ</div></div>
+                                <div class="fda-kpi"><div class="v">3</div><div class="l">عطل</div></div>
+                                <div class="fda-kpi"><div class="v">1</div><div class="l">خطورة</div></div>
+                            </div>
+                            <button class="fda-btn"><i class="fa-solid fa-up-right-and-down-left-from-center"></i> عرض التقارير التفصيلية</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity -->
+                    <div class="mini-card">
+                        <div class="mini-card-header" style="background: linear-gradient(135deg, #10b981, #059669);">
+                            <i class="fa-solid fa-clock-rotate-left"></i> آخر التحركات
+                        </div>
+                        <div class="mini-card-body">
+                            <div class="timeline-item">
+                                <div class="timeline-dot"><i class="fa-solid fa-check"></i></div>
+                                <div class="timeline-content"><h5>بدء العمل الميداني</h5><p>محمود الفني · منذ ساعة</p></div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot"><i class="fa-solid fa-check"></i></div>
+                                <div class="timeline-content"><h5>استلام البلاغ</h5><p>محمود الفني · منذ 3 ساعات</p></div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot"><i class="fa-solid fa-check"></i></div>
+                                <div class="timeline-content"><h5>تم تسجيل البلاغ</h5><p>أحمد محمد · الأمس</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Diagnosis -->
+            <div class="section-card">
+                <div class="section-header"><i class="fa-solid fa-clipboard-list"></i> التشخيص الفني</div>
+                <div class="problem-box">
+                    الجهاز لا يعمل بشكل صحيح عند تشغيله. عند الضغط على زر التشغيل، يضيء المؤشر الأحمر وينطفئ فوراً دون بدء التشغيل. كذلك الشاشة تعرض رسالة خطأ "E-004: Power Supply Failure" بشكل متكرر.
+                </div>
+                <div class="note-box note-warning">
+                    <strong><i class="fa-solid fa-pause"></i> سبب التعثر السابق:</strong> تأخر في وصول قطعة الغيار (Power Board) من المورد. تم طلبها يوم 10/01.
+                </div>
+                <div class="note-box note-success">
+                    <strong><i class="fa-solid fa-wrench"></i> تقرير الإصلاح:</strong> تم استبدال وحدة إمداد الطاقة. الجهاز يعمل الآن بشكل طبيعي بعد الفحص.
+                </div>
+            </div>
+            
+            <!-- Attachments -->
+            <div class="section-card">
+                <div class="section-header"><i class="fa-solid fa-paperclip"></i> المرفقات (3)</div>
+                <div class="attachment-item"><i class="fa-solid fa-file-pdf"></i><span>صورة_الخطأ_001.pdf</span></div>
+                <div class="attachment-item"><i class="fa-solid fa-image"></i><span>صورة_الجهاز_002.jpg</span></div>
+                <div class="attachment-item"><i class="fa-solid fa-file-excel"></i><span>تقرير_الصيانة.xlsx</span></div>
+                <div class="upload-zone">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <p>اسحب الملفات هنا أو اضغط للرفع</p>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="section-card">
+                <div class="section-header"><i class="fa-solid fa-bolt"></i> لوحة التحكم</div>
+                <div class="action-grid">
+                    <button class="action-btn btn-primary"><i class="fa-solid fa-handshake"></i> استلام</button>
+                    <button class="action-btn btn-primary"><i class="fa-solid fa-play"></i> بدء العمل</button>
+                    <button class="action-btn btn-warning"><i class="fa-solid fa-pause"></i> تعثر</button>
+                    <button class="action-btn btn-danger"><i class="fa-solid fa-arrow-up"></i> تصعيد</button>
+                    <button class="action-btn btn-success"><i class="fa-solid fa-check"></i> حل البلاغ</button>
+                    <button class="action-btn btn-secondary"><i class="fa-solid fa-ban"></i> رفض</button>
+                </div>
+            </div>
+            
+            <!-- Full Timeline -->
+            <div class="section-card">
+                <div class="section-header"><i class="fa-solid fa-list-check"></i> سجل البلاغ الكامل</div>
+                <div class="full-timeline">
+                    <div class="full-timeline-dot"><i class="fa-solid fa-play" style="color: var(--primary)"></i></div>
+                    <div class="full-timeline-content">
+                        <h5>بدء العمل الميداني على الجهاز</h5>
+                        <p>محمود الفني · 15 يناير 2024 - 10:30 ص</p>
+                    </div>
+                </div>
+                <div class="full-timeline">
+                    <div class="full-timeline-dot"><i class="fa-solid fa-handshake" style="color: var(--primary)"></i></div>
+                    <div class="full-timeline-content">
+                        <h5>استلام البلاغ وبدء المعاينة</h5>
+                        <p>محمود الفني · 15 يناير 2024 - 08:00 ص</p>
+                    </div>
+                </div>
+                <div class="full-timeline">
+                    <div class="full-timeline-dot"><i class="fa-solid fa-plus" style="color: var(--primary)"></i></div>
+                    <div class="full-timeline-content" style="border-bottom: none;">
+                        <h5>تم إنشاء البلاغ</h5>
+                        <p>أحمد محمد · 14 يناير 2024 - 04:45 م</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mockup-footer">
+        <p>لوحة ألوان Clinical Clean</p>
+        <div class="color-swatches">
+            <div class="swatch" style="background: #0ea5e9;" title="#0ea5e9"></div>
+            <div class="swatch" style="background: #e0f2fe;" title="#e0f2fe"></div>
+            <div class="swatch" style="background: #10b981;" title="#10b981"></div>
+            <div class="swatch" style="background: #f59e0b;" title="#f59e0b"></div>
+            <div class="swatch" style="background: #f8fafc;" title="#f8fafc"></div>
+            <div class="swatch" style="background: #ffffff;" title="#ffffff"></div>
+        </div>
+    </div>
+</body>
+</html>

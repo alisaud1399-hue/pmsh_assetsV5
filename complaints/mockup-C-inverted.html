@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج C - Inverted Focus</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-page: #f8fafc;
+            --bg-focus: #faf5ff;
+            --primary: #7c3aed;
+            --primary-light: #ede9fe;
+            --primary-dark: #5b21b6;
+            --secondary: #0891b2;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --text: #1e1b4b;
+            --text-muted: #64748b;
+            --border: #e0e7ff;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow: 0 4px 12px -2px rgba(124, 58, 237, 0.08);
+            --shadow-xl: 0 30px 60px -15px rgba(124, 58, 237, 0.15);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Tajawal', sans-serif; background: var(--bg-page); color: var(--text); min-height: 100vh; padding: 30px; }
+        
+        .mockup-header { text-align: center; margin-bottom: 30px; }
+        .mockup-header h1 { font-size: 26px; font-weight: 900; color: var(--primary-dark); margin-bottom: 6px; }
+        .mockup-header p { color: var(--text-muted); font-size: 13px; }
+        
+        /* Inverted Layout - Actions on Right, Fixed on Left */
+        .inv-grid { 
+            display: grid; 
+            grid-template-columns: 280px 1fr 300px; 
+            gap: 18px; 
+            max-width: 1600px; 
+            margin: 0 auto; 
+        }
+        @media(max-width: 1300px) { .inv-grid { grid-template-columns: 1fr; } }
+        
+        /* Sticky Sidebars */
+        .sticky-side { position: sticky; top: 20px; height: fit-content; display: flex; flex-direction: column; gap: 12px; }
+        
+        /* Card Style */
+        .data-card { 
+            background: #fff; 
+            border-radius: 14px; 
+            border: 1px solid var(--border); 
+            overflow: hidden; 
+            box-shadow: var(--shadow-sm); 
+        }
+        .data-card-header { 
+            padding: 12px 16px; 
+            font-size: 11px; 
+            font-weight: 900; 
+            color: #fff; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+        }
+        .data-card-body { padding: 14px; }
+        
+        /* Compact List Item */
+        .list-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            padding: 8px 0; 
+            border-bottom: 1px solid var(--border); 
+            font-size: 11px;
+        }
+        .list-item:last-child { border-bottom: none; }
+        .list-item .icon { width: 26px; height: 26px; border-radius: 7px; background: var(--primary-light); display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 10px; flex-shrink: 0; }
+        .list-item .lbl { color: var(--text-muted); font-weight: 600; min-width: 60px; font-size: 10px; }
+        .list-item .val { font-weight: 800; flex: 1; }
+        
+        /* Center - Action Zone */
+        .action-zone { 
+            background: var(--bg-focus); 
+            border-radius: 24px; 
+            box-shadow: var(--shadow-xl); 
+            border: 2px solid var(--primary-light); 
+            overflow: hidden;
+        }
+        
+        /* Top Action Header */
+        .action-header { 
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
+            padding: 18px 24px; 
+            color: #fff; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            gap: 16px;
+        }
+        .id-block { display: flex; align-items: center; gap: 14px; }
+        .id-num { font-size: 18px; font-weight: 900; font-family: 'Inter'; }
+        .id-tag { background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; backdrop-filter: blur(10px); }
+        .status-badge { 
+            background: #fff; 
+            color: var(--primary); 
+            padding: 8px 16px; 
+            border-radius: 25px; 
+            font-size: 11px; 
+            font-weight: 900; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            box-shadow: var(--shadow);
+        }
+        .status-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.3); } }
+        
+        .action-content { padding: 24px; }
+        
+        /* Hero Problem */
+        .hero-problem { 
+            background: linear-gradient(135deg, #fff, var(--primary-light)); 
+            border-radius: 18px; 
+            padding: 24px; 
+            margin-bottom: 20px; 
+            border-right: 6px solid var(--primary); 
+            position: relative;
+            box-shadow: var(--shadow-sm);
+        }
+        .hero-problem::before { 
+            content: '"'; 
+            position: absolute; 
+            top: 10px; 
+            left: 20px; 
+            font-size: 60px; 
+            color: var(--primary); 
+            opacity: 0.15; 
+            font-family: serif; 
+        }
+        .hero-problem .label { 
+            font-size: 11px; 
+            font-weight: 900; 
+            color: var(--primary); 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            margin-bottom: 8px; 
+            display: flex; 
+            align-items: center; 
+            gap: 6px;
+        }
+        .hero-problem .content { 
+            font-size: 15px; 
+            font-weight: 700; 
+            line-height: 1.9; 
+            color: var(--text); 
+            position: relative; 
+            z-index: 1; 
+        }
+        
+        /* Action Buttons Grid */
+        .action-grid-main { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+            gap: 10px; 
+            margin-bottom: 20px; 
+        }
+        .action-main-btn { 
+            padding: 16px 12px; 
+            border-radius: 14px; 
+            border: none; 
+            font-size: 11px; 
+            font-weight: 800; 
+            color: #fff; 
+            cursor: pointer; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 8px; 
+            transition: all 0.3s; 
+            font-family: 'Tajawal'; 
+            position: relative; 
+            overflow: hidden;
+        }
+        .action-main-btn i { font-size: 20px; }
+        .action-main-btn:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+        .action-main-btn.primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+        .action-main-btn.success { background: linear-gradient(135deg, var(--success), #10b981); }
+        .action-main-btn.warning { background: linear-gradient(135deg, var(--warning), #f59e0b); }
+        .action-main-btn.danger { background: linear-gradient(135deg, var(--danger), #ef4444); }
+        .action-main-btn.dark { background: linear-gradient(135deg, #1e1b4b, #312e81); }
+        
+        /* Notes */
+        .note-card { 
+            padding: 14px 16px; 
+            border-radius: 12px; 
+            font-size: 12px; 
+            font-weight: 600; 
+            margin-bottom: 10px; 
+            display: flex; 
+            gap: 12px; 
+            align-items: flex-start;
+            border-right: 4px solid;
+        }
+        .note-card i { font-size: 16px; margin-top: 1px; }
+        .note-warn { background: linear-gradient(135deg, #fffbeb, #fef3c7); border-color: var(--warning); color: #78350f; }
+        .note-suc { background: linear-gradient(135deg, #ecfdf5, #d1fae5); border-color: var(--success); color: #064e3b; }
+        
+        /* Timeline */
+        .tl-block { margin-top: 20px; }
+        .tl-block h4 { font-size: 13px; font-weight: 900; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid var(--primary-light); display: flex; align-items: center; gap: 8px; color: var(--text); }
+        
+        .tl-item { display: flex; gap: 12px; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px dashed var(--border); }
+        .tl-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .tl-icon-box { width: 36px; height: 36px; border-radius: 10px; background: var(--primary-light); display: flex; align-items: center; justify-content: center; color: var(--primary); flex-shrink: 0; }
+        .tl-icon-box.success { background: #dcfce7; color: var(--success); }
+        .tl-icon-box.warning { background: #fef3c7; color: var(--warning); }
+        .tl-text h5 { font-size: 12px; font-weight: 800; margin-bottom: 2px; }
+        .tl-text p { font-size: 10px; color: var(--text-muted); }
+        
+        /* Files */
+        .file-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #fef9c3; border: 1px solid #fde047; border-radius: 10px; margin-bottom: 8px; }
+        .file-row i { color: #ca8a04; font-size: 16px; }
+        .file-row .name { font-size: 11px; font-weight: 800; flex: 1; color: #78350f; }
+        .file-row .size { font-size: 9px; color: #a16207; }
+        
+        /* Mini Stats */
+        .mini-stats-2 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+        .mini-stat-2 { background: var(--primary-light); border-radius: 8px; padding: 10px 6px; text-align: center; }
+        .mini-stat-2 .v { font-size: 16px; font-weight: 900; color: var(--primary-dark); font-family: 'Inter'; }
+        .mini-stat-2 .l { font-size: 8px; font-weight: 700; color: var(--text-muted); margin-top: 1px; }
+        
+        /* Vertical Timeline */
+        .v-tl { position: relative; padding-right: 18px; }
+        .v-tl::before { content: ''; position: absolute; right: 4px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(to bottom, var(--primary), var(--primary-light)); }
+        .v-tl-item { display: flex; gap: 8px; margin-bottom: 10px; position: relative; }
+        .v-tl-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); margin-top: 3px; flex-shrink: 0; z-index: 1; }
+        .v-tl-dot.active { background: var(--success); box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2); }
+        .v-tl-content h6 { font-size: 10px; font-weight: 800; margin-bottom: 1px; }
+        .v-tl-content p { font-size: 9px; color: var(--text-muted); }
+        
+        .mockup-footer { text-align: center; margin-top: 30px; padding: 16px; color: var(--text-muted); font-size: 11px; }
+        .color-swatches { display: flex; justify-content: center; gap: 10px; margin-top: 8px; }
+        .swatch { width: 30px; height: 30px; border-radius: 6px; box-shadow: var(--shadow-sm); border: 2px solid #fff; }
+    </style>
+</head>
+<body>
+    <div class="mockup-header">
+        <h1><i class="fa-solid fa-compass"></i> نموذج C: Inverted Focus</h1>
+        <p>الجهاز والمُبلِّغ يسار + القرار الكبير بالوسط + الإجراءات والـ FDA يمين</p>
+    </div>
+    
+    <div class="inv-grid">
+        <!-- LEFT: Fixed Master Data -->
+        <div class="sticky-side">
+            <!-- ID -->
+            <div class="data-card" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border: none;">
+                <div class="data-card-body" style="padding: 18px; text-align: center; color: #fff;">
+                    <div style="font-size: 10px; opacity: 0.8; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">رقم البلاغ</div>
+                    <div style="font-size: 26px; font-weight: 900; font-family: 'Inter';">CMP-0847</div>
+                    <div style="font-size: 10px; opacity: 0.9; margin-top: 4px;">14 يناير 2024</div>
+                </div>
+            </div>
+            
+            <!-- Reporter -->
+            <div class="data-card">
+                <div class="data-card-header" style="background: linear-gradient(135deg, #0e7490, #0891b2);">
+                    <i class="fa-solid fa-user-nurse"></i> المُبلِّغ
+                </div>
+                <div class="data-card-body">
+                    <div class="list-item"><div class="icon"><i class="fa-solid fa-user"></i></div><span class="lbl">الاسم</span><span class="val">أحمد محمد</span></div>
+                    <div class="list-item"><div class="icon"><i class="fa-solid fa-hospital"></i></div><span class="lbl">القسم</span><span class="val">الطوارئ</span></div>
+                    <div class="list-item"><div class="icon"><i class="fa-solid fa-phone"></i></div><span class="lbl">الهاتف</span><span class="val eng">050-1234</span></div>
+                </div>
+            </div>
+            
+            <!-- Device Full -->
+            <div class="data-card">
+                <div class="data-card-header" style="background: linear-gradient(135deg, #16a34a, #22c55e);">
+                    <i class="fa-solid fa-laptop-medical"></i> الجهاز
+                </div>
+                <div class="data-card-body">
+                    <div class="list-item"><div class="icon"><i class="fa-solid fa-microchip"></i></div><span class="lbl">النوع</span><span class="val">مونيتور حياة</span></div>
+                    <div class="list-item"><div class="icon"><i class="fa-solid fa-tag"></i></div><span class="lbl">التاج</span><span class="val eng">SN-84729</span></div>
+                    <div class="list-item"><div class="icon"><i class="fa-solid fa-industry"></i></div><span class="lbl">الشركة</span><span class="val">Philips</span></div>
+                    <div class="list-item"><div class="icon"><i class="fa-solid fa-barcode"></i></div><span class="lbl">الموديل</span><span class="val eng">IntelliVue</span></div>
+                    <div class="list-item"><div class="icon"><i class="fa-solid fa-hourglass-half"></i></div><span class="lbl">العمر</span><span class="val eng">3 سنوات</span></div>
+                    <div class="list-item"><div class="icon"><i class="fa-solid fa-shield-halved"></i></div><span class="lbl">الضمان</span><span class="val" style="color: var(--success)">✓ ساري</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CENTER: Decision Zone -->
+        <div class="action-zone">
+            <div class="action-header">
+                <div class="id-block">
+                    <div class="id-num">#CMP-2024-0847</div>
+                    <div class="id-tag">بلاغ صيانة</div>
+                </div>
+                <div class="status-badge">
+                    <span class="dot"></span>
+                    جاري العمل
+                </div>
+            </div>
+            
+            <div class="action-content">
+                <!-- Hero Problem -->
+                <div class="hero-problem">
+                    <div class="label"><i class="fa-solid fa-quote-right"></i> وصف المشكلة</div>
+                    <div class="content">
+                        الجهاز لا يعمل عند التشغيل. عند الضغط على زر التشغيل، يضيء المؤشر الأحمر وينطفئ فوراً. الشاشة تعرض رسالة "E-004: Power Supply Failure" بشكل متكرر. الجهاز في قسم الطوارئ ويحتاج للعمل فوراً.
+                    </div>
+                </div>
+                
+                <!-- Main Actions -->
+                <div class="action-grid-main">
+                    <button class="action-main-btn primary"><i class="fa-solid fa-handshake"></i><span>استلام</span></button>
+                    <button class="action-main-btn primary"><i class="fa-solid fa-play"></i><span>بدء العمل</span></button>
+                    <button class="action-main-btn warning"><i class="fa-solid fa-pause"></i><span>تعثر</span></button>
+                    <button class="action-main-btn danger"><i class="fa-solid fa-arrow-up"></i><span>تصعيد</span></button>
+                    <button class="action-main-btn success"><i class="fa-solid fa-circle-check"></i><span>حل البلاغ</span></button>
+                    <button class="action-main-btn dark"><i class="fa-solid fa-ban"></i><span>رفض / إغلاق</span></button>
+                </div>
+                
+                <!-- Notes -->
+                <div class="note-card note-warn">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <div><strong>سبب التعثر:</strong> تأخر في وصول قطعة الغيار (Power Board) من المورد. تم طلبها 10/01.</div>
+                </div>
+                <div class="note-card note-suc">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <div><strong>تقرير الإصلاح:</strong> تم استبدال وحدة إمداد الطاقة. الجهاز يعمل الآن بشكل طبيعي.</div>
+                </div>
+                
+                <!-- Full Timeline -->
+                <div class="tl-block">
+                    <h4><i class="fa-solid fa-list-check" style="color: var(--primary);"></i> سجل حركة البلاغ</h4>
+                    <div class="tl-item">
+                        <div class="tl-icon-box success"><i class="fa-solid fa-play"></i></div>
+                        <div class="tl-text"><h5>بدء العمل الميداني على الجهاز</h5><p>محمود الفني · 15 يناير - 10:30 ص</p></div>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-icon-box warning"><i class="fa-solid fa-handshake"></i></div>
+                        <div class="tl-text"><h5>استلام البلاغ وبدء المعاينة</h5><p>محمود الفني · 15 يناير - 08:00 ص</p></div>
+                    </div>
+                    <div class="tl-item">
+                        <div class="tl-icon-box"><i class="fa-solid fa-plus"></i></div>
+                        <div class="tl-text"><h5>تم إنشاء البلاغ</h5><p>أحمد محمد · 14 يناير - 04:45 م</p></div>
+                    </div>
+                </div>
+                
+                <!-- Attachments -->
+                <div class="tl-block">
+                    <h4><i class="fa-solid fa-paperclip" style="color: #d97706;"></i> المرفقات (3)</h4>
+                    <div class="file-row"><i class="fa-solid fa-file-pdf"></i><span class="name">صورة_الخطأ.pdf</span><span class="size">2.4MB</span></div>
+                    <div class="file-row"><i class="fa-solid fa-image"></i><span class="name">صورة_الجهاز.jpg</span><span class="size">1.8MB</span></div>
+                    <div class="file-row"><i class="fa-solid fa-file-excel"></i><span class="name">تقرير_الصيانة.xlsx</span><span class="size">856KB</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- RIGHT: Actions & Derived -->
+        <div class="sticky-side">
+            <!-- FDA Stats -->
+            <div class="data-card">
+                <div class="data-card-header" style="background: linear-gradient(135deg, #0891b2, #06b6d4);">
+                    <i class="fa-solid fa-globe"></i> FDA
+                </div>
+                <div class="data-card-body">
+                    <div class="mini-stats-2">
+                        <div class="mini-stat-2"><div class="v">12</div><div class="l">بلاغ</div></div>
+                        <div class="mini-stat-2"><div class="v" style="color: var(--danger)">3</div><div class="l">عطل</div></div>
+                        <div class="mini-stat-2"><div class="v" style="color: var(--warning)">1</div><div class="l">خطورة</div></div>
+                    </div>
+                    <button style="width:100%;margin-top:10px;background:#0891b2;color:#fff;border:none;padding:8px;border-radius:8px;font-size:10px;font-weight:800;cursor:pointer;font-family:'Tajawal'">
+                        عرض التقارير
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="data-card">
+                <div class="data-card-header" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);">
+                    <i class="fa-solid fa-clock-rotate-left"></i> التحركات
+                </div>
+                <div class="data-card-body">
+                    <div class="v-tl">
+                        <div class="v-tl-item"><div class="v-tl-dot active"></div><div class="v-tl-content"><h6>بدء العمل</h6><p>محمود · 10:30</p></div></div>
+                        <div class="v-tl-item"><div class="v-tl-dot"></div><div class="v-tl-content"><h6>استلام</h6><p>محمود · 08:00</p></div></div>
+                        <div class="v-tl-item"><div class="v-tl-dot"></div><div class="v-tl-content"><h6>تسجيل</h6><p>أحمد · أمس</p></div></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Previous Complaints -->
+            <div class="data-card">
+                <div class="data-card-header" style="background: linear-gradient(135deg, #475569, #64748b);">
+                    <i class="fa-solid fa-history"></i> بلاغات سابقة
+                </div>
+                <div class="data-card-body">
+                    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px dashed var(--border)">
+                        <span style="width:8px;height:8px;border-radius:50%;background:var(--success);flex-shrink:0"></span>
+                        <span style="font-size:10px;font-weight:700;flex:1">عطل شاشة</span>
+                        <span class="eng" style="font-size:9px;color:var(--text-muted)">ديسمبر</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px dashed var(--border)">
+                        <span style="width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0"></span>
+                        <span style="font-size:10px;font-weight:700;flex:1">صيانة دورية</span>
+                        <span class="eng" style="font-size:9px;color:var(--text-muted)">نوفمبر</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;padding:8px 0">
+                        <span style="width:8px;height:8px;border-radius:50%;background:var(--warning);flex-shrink:0"></span>
+                        <span style="font-size:10px;font-weight:700;flex:1">بطارية</span>
+                        <span class="eng" style="font-size:9px;color:var(--text-muted)">سبتمبر</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mockup-footer">
+        <p><strong>الفلسفة:</strong> بيانات ثابتة (يسار) + تركيز بنفسجي للقرار (وسط) + مشتقات FDA وتحركات (يمين)</p>
+        <div class="color-swatches">
+            <div class="swatch" style="background: #7c3aed;"></div>
+            <div class="swatch" style="background: #ede9fe;"></div>
+            <div class="swatch" style="background: #0891b2;"></div>
+            <div class="swatch" style="background: #059669;"></div>
+            <div class="swatch" style="background: #faf5ff;"></div>
+            <div class="swatch" style="background: #ffffff;"></div>
+        </div>
+    </div>
+</body>
+</html>

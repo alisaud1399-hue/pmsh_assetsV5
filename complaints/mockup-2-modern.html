@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تصور 2 - Modern Hospital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #f0fdf4;
+            --card: #ffffff;
+            --primary: #059669;
+            --primary-light: #d1fae5;
+            --primary-dark: #047857;
+            --secondary: #6366f1;
+            --success: #22c55e;
+            --warning: #eab308;
+            --danger: #ef4444;
+            --text: #1c1917;
+            --text-muted: #57534e;
+            --border: #d6d3d1;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.08), 0 10px 10px -5px rgba(0,0,0,0.02);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Tajawal', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 40px; }
+        
+        .mockup-header { text-align: center; margin-bottom: 40px; }
+        .mockup-header h1 { font-size: 28px; font-weight: 800; color: var(--primary-dark); margin-bottom: 8px; }
+        .mockup-header p { color: var(--text-muted); font-size: 14px; }
+        
+        .L-grid { display: grid; grid-template-columns: 360px 1fr; gap: 24px; max-width: 1400px; margin: 0 auto; }
+        @media(max-width: 1100px) { .L-grid { grid-template-columns: 1fr; } }
+        
+        /* Modern Card */
+        .modern-card { background: var(--card); border-radius: 20px; box-shadow: var(--shadow-lg); border: 1px solid rgba(5, 150, 105, 0.1); overflow: hidden; }
+        .modern-header { background: linear-gradient(135deg, #059669 0%, #10b981 100%); padding: 24px; position: relative; overflow: hidden; }
+        .modern-header::before { content: ''; position: absolute; top: -50%; right: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 50%); }
+        
+        .header-content { position: relative; z-index: 1; }
+        .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+        .complaint-id { font-size: 20px; font-weight: 900; color: #fff; }
+        .status-modern { background: rgba(255,255,255,0.25); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 30px; font-size: 11px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.3); }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        .header-meta { display: flex; gap: 12px; flex-wrap: wrap; }
+        .meta-chip { background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 8px 14px; border-radius: 10px; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.95); display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.2); }
+        
+        /* Sidebar Content */
+        .sidebar-content { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+        
+        /* Info Card */
+        .info-card { background: var(--card); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; }
+        .info-card-header { padding: 14px 18px; font-size: 12px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .info-card-body { padding: 16px; }
+        
+        .data-row { display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px dashed var(--border); }
+        .data-row:last-child { border-bottom: none; }
+        .data-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--primary-light); display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 12px; }
+        .data-label { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+        .data-value { font-size: 13px; font-weight: 800; color: var(--text); }
+        
+        /* KPI Modern */
+        .kpi-modern { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .kpi-modern-item { background: linear-gradient(135deg, var(--primary-light), #ecfdf5); border-radius: 14px; padding: 16px 12px; text-align: center; border: 1px solid rgba(5, 150, 105, 0.1); }
+        .kpi-modern-value { font-size: 24px; font-weight: 900; font-family: 'Inter', sans-serif; color: var(--primary); }
+        .kpi-modern-label { font-size: 9px; font-weight: 700; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        /* Timeline Modern */
+        .timeline-modern { position: relative; padding-right: 24px; }
+        .timeline-modern::before { content: ''; position: absolute; right: 8px; top: 12px; bottom: 12px; width: 3px; background: linear-gradient(to bottom, var(--primary), transparent); border-radius: 3px; }
+        .timeline-modern-item { display: flex; gap: 14px; margin-bottom: 16px; position: relative; }
+        .timeline-modern-dot { width: 20px; height: 20px; border-radius: 50%; background: var(--primary); border: 3px solid var(--card); box-shadow: 0 0 0 3px var(--primary-light); flex-shrink: 0; z-index: 1; }
+        .timeline-modern-content h5 { font-size: 11px; font-weight: 800; margin-bottom: 2px; color: var(--text); }
+        .timeline-modern-content p { font-size: 9px; color: var(--text-muted); }
+        
+        /* Main Content */
+        .main-modern { display: flex; flex-direction: column; gap: 20px; }
+        
+        .content-section { background: var(--card); border-radius: 20px; box-shadow: var(--shadow-lg); border: 1px solid rgba(5, 150, 105, 0.1); padding: 24px; }
+        .section-title { font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 18px; display: flex; align-items: center; gap: 12px; padding-bottom: 14px; border-bottom: 2px solid var(--primary-light); }
+        .section-title-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--primary-light); display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 14px; }
+        
+        /* Problem Box */
+        .problem-modern { background: linear-gradient(135deg, #ecfdf5 0%, var(--primary-light) 100%); border-radius: 16px; padding: 24px; font-size: 14px; font-weight: 600; line-height: 1.9; color: var(--text); border-right: 5px solid var(--primary); position: relative; }
+        .problem-modern::after { content: ''; position: absolute; top: 0; left: 0; width: 100px; height: 100%; background: linear-gradient(to left, rgba(5, 150, 105, 0.1), transparent); border-radius: 16px 0 0 16px; }
+        
+        /* Notes */
+        .note-modern { margin-top: 14px; padding: 16px 18px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .note-warn { background: linear-gradient(135deg, #fefce8, #fef9c3); border: 1px solid #fde047; border-right: 4px solid var(--warning); color: #854d0e; }
+        .note-suc { background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 1px solid #86efac; border-right: 4px solid var(--success); color: #166534; }
+        
+        /* Action Buttons */
+        .action-modern { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+        .action-modern-btn { padding: 16px 18px; border-radius: 14px; border: none; font-size: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s; font-family: 'Tajawal', sans-serif; position: relative; overflow: hidden; }
+        .action-modern-btn::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; background: rgba(255,255,255,0.2); border-radius: 50%; transition: all 0.5s; }
+        .action-modern-btn:hover::before { width: 300px; height: 300px; }
+        .action-modern-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+        .action-modern-btn i { position: relative; z-index: 1; }
+        .action-modern-btn span { position: relative; z-index: 1; }
+        
+        .btn-green { background: linear-gradient(135deg, #059669, #10b981); color: #fff; }
+        .btn-blue { background: linear-gradient(135deg, #2563eb, #3b82f6); color: #fff; }
+        .btn-yellow { background: linear-gradient(135deg, #ca8a04, #eab308); color: #fff; }
+        .btn-red { background: linear-gradient(135deg, #dc2626, #ef4444); color: #fff; }
+        .btn-gray { background: linear-gradient(135deg, #57534e, #78716c); color: #fff; }
+        
+        /* Attachments */
+        .attachment-modern { display: flex; align-items: center; gap: 14px; background: linear-gradient(135deg, #fef9c3, #fefce8); border: 1px solid #fde047; border-radius: 12px; padding: 14px 18px; margin-bottom: 10px; }
+        .attachment-modern i { font-size: 20px; color: #ca8a04; }
+        .attachment-modern-info { flex: 1; }
+        .attachment-modern-info .name { font-size: 13px; font-weight: 800; color: #854d0e; }
+        .attachment-modern-info .size { font-size: 10px; color: #a16207; }
+        
+        .upload-modern { border: 2px dashed var(--border); border-radius: 16px; padding: 28px; text-align: center; cursor: pointer; transition: all 0.3s; background: linear-gradient(135deg, #fafaf9, #f5f5f4); }
+        .upload-modern:hover { border-color: var(--primary); background: var(--primary-light); transform: scale(1.01); }
+        .upload-modern i { font-size: 32px; color: var(--primary); margin-bottom: 8px; }
+        .upload-modern p { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+        
+        /* Full Timeline */
+        .timeline-full { display: flex; gap: 18px; margin-bottom: 20px; }
+        .timeline-full-icon { width: 42px; height: 42px; border-radius: 12px; background: var(--primary-light); border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--primary); }
+        .timeline-full-content { flex: 1; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .timeline-full-content h5 { font-size: 13px; font-weight: 800; margin-bottom: 4px; color: var(--text); }
+        .timeline-full-content p { font-size: 11px; color: var(--text-muted); }
+        
+        /* Footer */
+        .mockup-footer { text-align: center; margin-top: 40px; padding: 20px; color: var(--text-muted); font-size: 12px; }
+        .color-swatches { display: flex; justify-content: center; gap: 12px; margin-top: 12px; }
+        .swatch { width: 40px; height: 40px; border-radius: 8px; box-shadow: var(--shadow); border: 2px solid #fff; }
+    </style>
+</head>
+<body>
+    <div class="mockup-header">
+        <h1><i class="fa-solid fa-heart-pulse"></i> تصور 2: Modern Hospital</h1>
+        <p>تصميم أخضر نظيف مع لمسات طبية عصرية — مريح للعين</p>
+    </div>
+    
+    <div class="L-grid">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="modern-card">
+                <div class="modern-header">
+                    <div class="header-content">
+                        <div class="header-top">
+                            <span class="complaint-id eng">#CMP-2024-0847</span>
+                            <span class="status-modern"><span class="status-dot"></span> جاري العمل</span>
+                        </div>
+                        <div class="header-meta">
+                            <span class="meta-chip"><i class="fa-solid fa-hospital"></i> قسم الطوارئ</span>
+                            <span class="meta-chip"><i class="fa-solid fa-user-nurse"></i> أحمد محمد</span>
+                            <span class="meta-chip eng"><i class="fa-solid fa-calendar"></i> 2024-01-15</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-content">
+                    <!-- Asset Info -->
+                    <div class="info-card">
+                        <div class="info-card-header" style="background: linear-gradient(135deg, #059669, #10b981);">
+                            <i class="fa-solid fa-monitor-heart"></i> ملف الجهاز
+                        </div>
+                        <div class="info-card-body">
+                            <div class="data-row">
+                                <div class="data-icon"><i class="fa-solid fa-microchip"></i></div>
+                                <div><div class="data-label">الجهاز</div><div class="data-value">مونيتور حياة</div></div>
+                            </div>
+                            <div class="data-row">
+                                <div class="data-icon"><i class="fa-solid fa-tag"></i></div>
+                                <div><div class="data-label">التاج نمبر</div><div class="data-value eng">SN-84729-X</div></div>
+                            </div>
+                            <div class="data-row">
+                                <div class="data-icon"><i class="fa-solid fa-industry"></i></div>
+                                <div><div class="data-label">الموديل</div><div class="data-value">Philips IntelliVue</div></div>
+                            </div>
+                            <div class="data-row">
+                                <div class="data-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                                <div><div class="data-label">الضمان</div>
+                                    <span style="background:#d1fae5;color:#166534;padding:4px 10px;border-radius:8px;font-size:10px;font-weight:700">ساري حتى 2025</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- FDA Stats -->
+                    <div class="info-card">
+                        <div class="info-card-header" style="background: linear-gradient(135deg, #0891b2, #06b6d4);">
+                            <i class="fa-solid fa-globe"></i> تقارير FDA
+                        </div>
+                        <div class="info-card-body">
+                            <div class="kpi-modern">
+                                <div class="kpi-modern-item"><div class="kpi-modern-value">12</div><div class="kpi-modern-label">بلاغ</div></div>
+                                <div class="kpi-modern-item"><div class="kpi-modern-value">3</div><div class="kpi-modern-label">عطل</div></div>
+                                <div class="kpi-modern-item"><div class="kpi-modern-value">1</div><div class="kpi-modern-label">خطورة</div></div>
+                            </div>
+                            <button style="width:100%;margin-top:12px;background:linear-gradient(135deg,#0891b2,#06b6d4);color:#fff;border:none;padding:12px;border-radius:10px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Tajawal',sans-serif">
+                                <i class="fa-solid fa-up-right-and-down-left-from-center"></i> عرض التفاصيل
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Timeline -->
+                    <div class="info-card">
+                        <div class="info-card-header" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);">
+                            <i class="fa-solid fa-clock-rotate-left"></i> آخر التحركات
+                        </div>
+                        <div class="info-card-body">
+                            <div class="timeline-modern">
+                                <div class="timeline-modern-item">
+                                    <div class="timeline-modern-dot"></div>
+                                    <div class="timeline-modern-content"><h5>بدء العمل الميداني</h5><p>محمود الفني · منذ ساعة</p></div>
+                                </div>
+                                <div class="timeline-modern-item">
+                                    <div class="timeline-modern-dot"></div>
+                                    <div class="timeline-modern-content"><h5>استلام البلاغ</h5><p>محمود الفني · منذ 3 ساعات</p></div>
+                                </div>
+                                <div class="timeline-modern-item">
+                                    <div class="timeline-modern-dot"></div>
+                                    <div class="timeline-modern-content"><h5>تسجيل البلاغ</h5><p>أحمد محمد · الأمس</p></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-modern">
+            <!-- Diagnosis -->
+            <div class="content-section">
+                <div class="section-title">
+                    <div class="section-title-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+                    التشخيص الفني
+                </div>
+                <div class="problem-modern">
+                    الجهاز لا يعمل بشكل صحيح عند تشغيله. عند الضغط على زر التشغيل، يضيء المؤشر الأحمر وينطفئ فوراً دون بدء التشغيل. كذلك الشاشة تعرض رسالة خطأ "E-004: Power Supply Failure" بشكل متكرر.
+                </div>
+                <div class="note-modern note-warn">
+                    <strong><i class="fa-solid fa-pause"></i> سبب التعثر:</strong> تأخر في وصول قطعة الغيار (Power Board) من المورد. تم طلبها يوم 10/01.
+                </div>
+                <div class="note-modern note-suc" style="margin-top:12px">
+                    <strong><i class="fa-solid fa-wrench"></i> تقرير الإصلاح:</strong> تم استبدال وحدة إمداد الطاقة. الجهاز يعمل الآن بشكل طبيعي.
+                </div>
+            </div>
+            
+            <!-- Attachments -->
+            <div class="content-section">
+                <div class="section-title">
+                    <div class="section-title-icon"><i class="fa-solid fa-paperclip"></i></div>
+                    المرفقات <span style="background:var(--primary-light);color:var(--primary);padding:2px 8px;border-radius:10px;font-size:10px;margin-right:auto">3</span>
+                </div>
+                <div class="attachment-modern"><i class="fa-solid fa-file-pdf"></i><div class="attachment-modern-info"><div class="name">صورة_الخطأ_001.pdf</div><div class="size">2.4 MB · منذ يومين</div></div></div>
+                <div class="attachment-modern"><i class="fa-solid fa-image"></i><div class="attachment-modern-info"><div class="name">صورة_الجهاز_002.jpg</div><div class="size">1.8 MB · منذ يوم</div></div></div>
+                <div class="attachment-modern"><i class="fa-solid fa-file-excel"></i><div class="attachment-modern-info"><div class="name">تقرير_الصيانة.xlsx</div><div class="size">856 KB · اليوم</div></div></div>
+                <div class="upload-modern">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <p>اسحب الملفات هنا أو اضغط للرفع<br><span style="font-size:10px;color:#a8a29e">PDF, JPG, PNG, DOC (حتى 5 ملفات)</span></p>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="content-section">
+                <div class="section-title">
+                    <div class="section-title-icon"><i class="fa-solid fa-bolt"></i></div>
+                    لوحة التحكم الفنية
+                </div>
+                <div class="action-modern">
+                    <button class="action-modern-btn btn-blue"><i class="fa-solid fa-handshake"></i><span>استلام</span></button>
+                    <button class="action-modern-btn btn-blue"><i class="fa-solid fa-play"></i><span>بدء العمل</span></button>
+                    <button class="action-modern-btn btn-yellow"><i class="fa-solid fa-pause"></i><span>تعثر</span></button>
+                    <button class="action-modern-btn btn-red"><i class="fa-solid fa-arrow-up"></i><span>تصعيد</span></button>
+                    <button class="action-modern-btn btn-green"><i class="fa-solid fa-check"></i><span>حل البلاغ</span></button>
+                    <button class="action-modern-btn btn-gray"><i class="fa-solid fa-ban"></i><span>رفض</span></button>
+                </div>
+            </div>
+            
+            <!-- Full Timeline -->
+            <div class="content-section">
+                <div class="section-title">
+                    <div class="section-title-icon"><i class="fa-solid fa-list-check"></i></div>
+                    سجل البلاغ الكامل
+                </div>
+                <div class="timeline-full">
+                    <div class="timeline-full-icon"><i class="fa-solid fa-play"></i></div>
+                    <div class="timeline-full-content"><h5>بدء العمل الميداني على الجهاز</h5><p>محمود الفني · 15 يناير 2024 - 10:30 ص</p></div>
+                </div>
+                <div class="timeline-full">
+                    <div class="timeline-full-icon"><i class="fa-solid fa-handshake"></i></div>
+                    <div class="timeline-full-content"><h5>استلام البلاغ وبدء المعاينة</h5><p>محمود الفني · 15 يناير 2024 - 08:00 ص</p></div>
+                </div>
+                <div class="timeline-full">
+                    <div class="timeline-full-icon" style="background:#ecfdf5;border-color:#22c55e;color:#22c55e"><i class="fa-solid fa-plus"></i></div>
+                    <div class="timeline-full-content" style="border-bottom:none"><h5>تم إنشاء البلاغ</h5><p>أحمد محمد · 14 يناير 2024 - 04:45 م</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mockup-footer">
+        <p>لوحة ألوان Modern Hospital</p>
+        <div class="color-swatches">
+            <div class="swatch" style="background: #059669;" title="#059669"></div>
+            <div class="swatch" style="background: #10b981;" title="#10b981"></div>
+            <div class="swatch" style="background: #d1fae5;" title="#d1fae5"></div>
+            <div class="swatch" style="background: #0891b2;" title="#0891b2"></div>
+            <div class="swatch" style="background: #6366f1;" title="#6366f1"></div>
+            <div class="swatch" style="background: #f0fdf4;" title="#f0fdf4"></div>
+        </div>
+    </div>
+</body>
+</html>
