@@ -286,9 +286,12 @@ h3.sec{font-size:14px;margin:6px 2px 10px;color:var(--navy); font-weight:800;}
       <option value=""><?= $is_ar ? '— كل الطوابق —' : '— All floors —' ?></option>
     </select>
   </div>
-  <div id="roomList" class="picker-rooms">
-    <div class="loading"><i class="fa-solid fa-circle-notch"></i> <?= $is_ar ? 'جاري التحميل...' : 'Loading...' ?></div>
-  </div>
+  <div id="roomNav" class="picker-floors" style="display:none">
+<i class="fa-solid fa-door-open"></i>
+<select id="roomSel" onchange="onRoomChange()">
+<option value=""><?= $is_ar ? '— اختر غرفة (موثّقة) —' : '— Verified room —' ?></option>
+</select>
+</div>
 </div>
 
 </div>
@@ -411,76 +414,39 @@ function paintRing(){ const pct = TOTAL_SCOPE ? Math.min(100, Math.round(doneSco
 function show(s){ ['scrLoc','scrRoom','scrDevice'].forEach(x=>$(x)&&$(x).classList.remove('on')); $(s==='loc'?'scrLoc':s==='room'?'scrRoom':'scrDevice').classList.add('on'); if (s==='device' && cur && !cur.done) $('savebar').classList.add('show'); else $('savebar').classList.remove('show'); stopCamera(); }
 
 function goBack(){ if (curRoom) { show('room'); openRoom(curRoom.id); } else { location.href = `${BASE}/inventory/session.php?id=${SID}`; } }
-/* ═══ بناء dropdown المباني من allLocs ═══ */
+/* ═══ تحميل المواقع: الغرف الموثّقة فقط ═══ */
+async function loadLocations(){
+ try{
+  const r = await fetch(`${BASE}/inventory/api/verified_rooms.php?session_id=${SID}`);
+  const j = await r.json();
+  allLocs = j.ok ? (j.rooms||[]) : [];
+ }catch(e){ allLocs = []; }
+ renderBuildingPicker();
+}
 function renderBuildingPicker(){
-    const sel = $('bldSel');
-    if(!sel) return;
-    const buildings = {};
-    allLocs.forEach(r => {
-        const bid = r.building_id || 0;
-        if (!bid) return;
-        if (!buildings[bid]) buildings[bid] = { id: bid, name: r.building, name_en: r.building_en, count: 0 };
-        buildings[bid].count++;
-    });
-    const list = Object.values(buildings).sort((a,b) => (a.name||'').localeCompare(b.name||'', 'ar'));
-    const cur = sel.value;
-    sel.innerHTML = `<option value="">${window.IS_AR?'— اختر مبنى —':'— Pick a building —'}</option>` +
-        list.map(b => `<option value="${b.id}">${esc(b.name||b.name_en||'#'+b.id)} (${b.count})</option>`).join('');
-    if (cur) sel.value = cur;
-    $('flrSel').innerHTML = `<option value="">${window.IS_AR?'— كل الطوابق —':'— All floors —'}</option>`;
-    $('floorNav').style.display = 'none';
-    $('roomList').innerHTML = `<div class="empty-state"><i class="fa-solid fa-building"></i>${window.IS_AR?'اختر مبنى لعرض الغرف':'Pick a building to see its rooms'}</div>`;
+ const sel=$('bldSel'); if(!sel) return;
+ const b={};
+ allLocs.forEach(r=>{ const id=r.building_id||0; if(!id) return; if(!b[id]) b[id]={id,name:r.building,name_en:r.building_en}; });
+ const list=Object.values(b).sort((x,y)=>(x.name||'').localeCompare(y.name||'','ar'));
+ sel.innerHTML=`<option value="">${window.IS_AR?'— اختر مبنى —':'— Pick a building —'}</option>`+list.map(x=>`<option value="${x.id}">${esc(x.name||x.name_en||'#'+x.id)}</option>`).join('');
+ $('floorNav').style.display='none'; $('roomNav').style.display='none';
 }
-
-/* ═══ عند تغيير المبنى ═══ */
 function onBldChange(){
-    const bid = +$('bldSel').value || 0;
-    if (!bid){ $('floorNav').style.display='none'; $('roomList').innerHTML = ''; return; }
-    const floors = {};
-    allLocs.forEach(r => {
-        if ((r.building_id||0) !== bid) return;
-        const fid = r.floor_id || 0;
-        if (!floors[fid]) floors[fid] = { id: fid, name: r.floor, name_en: r.floor_en };
-    });
-    const flrList = Object.values(floors).filter(f => f.id).sort((a,b) => (a.name||'').localeCompare(b.name||'', 'ar'));
-    const flrSel = $('flrSel');
-    flrSel.innerHTML = `<option value="">${window.IS_AR?'— كل الطوابق —':'— All floors —'}</option>` +
-        flrList.map(f => `<option value="${f.id}">${esc(f.name||f.name_en||'#'+f.id)}</option>`).join('');
-    $('floorNav').style.display = flrList.length > 1 ? 'flex' : 'none';
-    renderRooms(bid, 0);
+ const bid=+$('bldSel').value||0;
+ const f={};
+ allLocs.forEach(r=>{ if((r.building_id||0)!==bid) return; const id=r.floor_id||0; if(!id) return; if(!f[id]) f[id]={id,name:r.floor,name_en:r.floor_en}; });
+ const list=Object.values(f).sort((x,y)=>(x.name||'').localeCompare(y.name||'','ar'));
+ $('flrSel').innerHTML=`<option value="">${window.IS_AR?'— اختر طابق —':'— Floor —'}</option>`+list.map(x=>`<option value="${x.id}">${esc(x.name||x.name_en||'#'+x.id)}</option>`).join('');
+ $('floorNav').style.display=list.length?'flex':'none';
+ $('roomNav').style.display='none';
 }
-
-/* ═══ عند تغيير الطابق ═══ */
 function onFlrChange(){
-    const bid = +$('bldSel').value || 0;
-    const fid = +$('flrSel').value || 0;
-    renderRooms(bid, fid);
+ const bid=+$('bldSel').value||0, fid=+$('flrSel').value||0;
+ const list=allLocs.filter(r=>(r.building_id||0)===bid&&(r.floor_id||0)===fid).sort((x,y)=>(x.name||'').localeCompare(y.name||'','ar'));
+ $('roomSel').innerHTML=`<option value="">${window.IS_AR?'— اختر غرفة —':'— Room —'}</option>`+list.map(r=>`<option value="${r.room_id}">${esc(r.name||r.name_en||'#'+r.room_id)} (${r.done||0}/${r.total||0})</option>`).join('');
+ $('roomNav').style.display=list.length?'flex':'none';
 }
-
-/* ═══ رسم قائمة الغرف ═══ */
-function renderRooms(bid, fid){
-    const list = allLocs.filter(r => {
-        if ((r.building_id||0) !== bid) return false;
-        if (fid && (r.floor_id||0) !== fid) return false;
-        return true;
-    });
-    if (!list.length){
-        $('roomList').innerHTML = `<div class="empty-state"><i class="fa-solid fa-door-open"></i>${window.IS_AR?'لا توجد غرف':'No rooms'}</div>`;
-        return;
-    }
-    list.sort((a,b) => (a.name||'').localeCompare(b.name||'', 'ar'));
-    $('roomList').innerHTML = list.map(r => {
-        const done = r.total > 0 && r.done >= r.total;
-        const pct = r.total > 0 ? Math.round(r.done/r.total*100) : 0;
-        return `<button class="room-item ${done?'done':''}" onclick="openRoom(${r.room_id})">
-            <div class="ic"><i class="fa-solid fa-door-${done?'closed':'open'}"></i></div>
-            <div class="nm">${esc(r.name||r.name_en||'#'+r.room_id)}
-                <div class="pt">${esc(r.floor||r.floor_en||'')}</div>
-            </div>
-            <div class="pr"><b>${r.done}/${r.total}</b>${pct}%</div>
-        </button>`;
-    }).join('');
-}
+function onRoomChange(){ const v=+$('roomSel').value||0; if(v) openRoom(v); }
 
 async function openRoom(roomId){
     show('room');
@@ -586,6 +552,20 @@ async function toggleCamera(mode){
 }
 function stopCamera(){ if(qrScanner){ try{qrScanner.stop();qrScanner.clear();}catch(e){} qrScanner=null; } $('globalCameraBox').style.display='none'; $('cameraBox').style.display='none'; }
 
+/* ═══ تحميل المواقع (موثّقة أولاً + fallback) ═══ */
+async function loadLocations(){
+ try{
+  let r=await fetch(`${BASE}/inventory/api/verified_rooms.php?session_id=${SID}`);
+  let j=await r.json();
+  if(j.ok && Array.isArray(j.rooms)){ allLocs=j.rooms; renderBuildingPicker(); return; }
+ }catch(e){}
+ try{
+  let r=await fetch(`${BASE}/inventory/api/locations_summary.php?session_id=${SID}`);
+  let j=await r.json();
+  allLocs=(j.ok && Array.isArray(j.all_locs))? j.all_locs : [];
+  renderBuildingPicker();
+ }catch(e){ allLocs=[]; renderBuildingPicker(); }
+}
 loadLocations();
 </script>
 

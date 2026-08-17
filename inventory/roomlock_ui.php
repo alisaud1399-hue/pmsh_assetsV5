@@ -12,6 +12,14 @@ $rl_max_susp  = (int)get_setting('inv_max_suspend_count','3');
 .rl-exit-opt .s{font-size:11.5px;color:var(--muted);margin-top:3px}
 .rl-lockbar{background:linear-gradient(135deg,#065f46,#10b981);color:#fff;border-radius:12px;padding:8px 12px;font-size:12px;font-weight:800;margin-bottom:10px;display:flex;gap:8px;align-items:center}
 .rl-lockbar i{font-size:14px}
+.rl-lockbar{flex-wrap:wrap;justify-content:space-between;align-items:center}
+.rlb-main{flex:1;min-width:120px}
+.rlb-main b{font-size:13px}
+.rlb-sub{font-size:10.5px;opacity:.92;font-weight:600;margin-top:2px}
+.rlb-o{background:rgba(255,255,255,.18);padding:1px 8px;border-radius:99px}
+.rlb-time{display:flex;flex-direction:column;align-items:center;font-family:'Inter',monospace;font-size:11px;line-height:1.5}
+#rlElapsed{background:rgba(0,0,0,.25);padding:1px 8px;border-radius:6px;font-weight:800}
+.rlb-btn{background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:8px;padding:6px 10px;font-size:14px;cursor:pointer}
 </style>
 
 <!-- ورقة الخروج من الغرفة -->
@@ -46,11 +54,12 @@ $rl_max_susp  = (int)get_setting('inv_max_suspend_count','3');
 
 <script>
 const RL = {
-  manual: <?= $rl_manual?'true':'false' ?>,
-  qrRequired: <?= $rl_qr_req?'true':'false' ?>,
-  audioCue: <?= $rl_audio?'true':'false' ?>,
-  vibrate: <?= $rl_vibrate?'true':'false' ?>,
-  maxSuspend: <?= $rl_max_susp ?>,
+  manual: <?=$rl_manual?'true':'false'?>,
+  meName: '<?= e(current_user()['full_name'] ?? '') ?>',  // ✅ أضف هذا السطر هنا
+  qrRequired: <?=$rl_qr_req?'true':'false'?>,
+  audioCue: <?=$rl_audio?'true':'false'?>,
+  vibrate: <?=$rl_vibrate?'true':'false'?>,
+  maxSuspend: <?=$rl_max_susp?>,
   suspendCount: 0,
   room: null,
   pendingRoom: null
@@ -146,13 +155,43 @@ async function rlDoTakeover(){
 }
 function rlCancelTakeover(){ $('rlTakeoverModal').classList.remove('show'); RL.pendingRoom=null; }
 
-function rlShowLockBar(){
-  const head=document.querySelector('#scrRoom .roomhead');
-  if(head && !head.querySelector('.rl-lockbar')){
-    const d=document.createElement('div'); d.className='rl-lockbar';
-    d.innerHTML='<i class="fa-solid fa-lock"></i> '+(window.IS_AR?'غرفة مقفلة لك — سجّل كل الموجود فعلياً':'Room locked to you — audit everything present');
-    head.prepend(d);
+/* ── شريط القفل المطوّر: اسم + مستخدمون + وقت + أزرار إيقاف/خروج ── */
+let rlTimerInt=null, rlStartTs=null;
+const rlIsAr=s=>/[\u0600-\u06FF]/.test(s||'');
+function rlArEn(a,b){a=a||'';b=b||'';return rlIsAr(a)?[a,b]:[b,a];}
+function rlFmt(s){s=Math.max(0,Math.floor(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return (h?h+':':'')+String(m).padStart(2,'0')+':'+String(x).padStart(2,'0');}
+function rlTick(){
+ const c=document.getElementById('rlClock'); if(c)c.textContent=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+ const e=document.getElementById('rlElapsed'); if(e&&rlStartTs)e.textContent=rlFmt((Date.now()-rlStartTs)/1000);
+}
+async function rlShowLockBar(){
+ const head=document.querySelector('#scrRoom .roomhead'); if(!head)return;
+ let bar=head.querySelector('.rl-lockbar');
+ if(!bar){bar=document.createElement('div');bar.className='rl-lockbar';head.prepend(bar);}
+ try{
+  const r=await fetch(BASE+'/inventory/api/room_lock.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'status',session_id:SID,room_id:RL.room})});
+  const j=await r.json();
+  if(j.ok){
+    const rm=j.room||{};
+    const [arN,enN]=rlArEn(rm.name_en,rm.name);
+    const [arB,enB]=rlArEn(rm.b_name_en,rm.b_name);
+    const [arF,enF]=rlArEn(rm.f_name_en,rm.f_name);
+    if($('roomName'))$('roomName').innerHTML=esc(arN||'—')+(enN?' <span style="opacity:.6;font-size:11px">/ '+esc(enN)+'</span>':'');
+    if($('roomPath'))$('roomPath').innerHTML=esc(arB||'')+' / '+esc(arF||'')+(enB?' <span style="opacity:.6;font-size:10.5px">'+esc(enB)+'</span>':'');
+    const users=j.users||[];
+    const meU=users.find(u=>u.me); const others=users.filter(u=>!u.me);
+    rlStartTs=(meU&&(meU.resumed_at||meU.at))?new Date(String(meU.resumed_at||meU.at).replace(' ','T')).getTime():Date.now();
+    const othersHtml=others.length?' · <span class="rlb-o">👥 '+others.map(u=>esc(u.name)).join('، ')+'</span>':'';
+    bar.innerHTML='<i class="fa-solid fa-lock"></i>'
+      +'<div class="rlb-main"><b>'+esc(arN||'')+'</b>'
+      +'<div class="rlb-sub">👤 '+esc(RL.meName||'')+othersHtml+'</div></div>'
+      +'<div class="rlb-time"><span id="rlClock">--:--</span><span id="rlElapsed">00:00</span></div>'
+      +'<button class="rlb-btn" onclick="rlSuspend()" title="إيقاف مؤقت">⏸</button>'
+      +'<button class="rlb-btn" onclick="rlComplete()" title="إقفال وخروج">🔒</button>';
   }
+ }catch(e){}
+ if(!rlTimerInt) rlTimerInt=setInterval(rlTick,1000);
+ rlTick();
 }
 
 /* اعتراض الرجوع من الغرفة → ورقة الخروج */

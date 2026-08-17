@@ -703,5 +703,6 @@ if ($a['action'] === 'location_changed') {
 </div>
 </div></main>
 </div>
+<?php if (file_exists(BASE_PATH.'/inventory/session_radar_ui.php')) include BASE_PATH.'/inventory/session_radar_ui.php'; ?>
 </body>
 </html>
